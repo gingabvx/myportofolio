@@ -74,6 +74,15 @@ h1,
     gap: 1.5rem 3rem;
 }
 
+.hero-grid-reverse {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    grid-template-areas:
+        "photo identity"
+        "photo details";
+    gap: 1.5rem 3rem;
+}
+
 .hero-identity {
     grid-area: identity;
 }
@@ -180,6 +189,14 @@ h1,
 /* Responsive dasar */
 @media (max-width: 600px) {
     .hero-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "identity"
+            "photo"
+            "details";
+    }
+
+    .hero-grid-reverse {
         grid-template-columns: 1fr;
         grid-template-areas:
             "identity"

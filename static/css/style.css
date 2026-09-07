@@ -194,3 +194,27 @@ h1,
         justify-content: flex-start;
     }
 }
+
+/* Projects CSS */
+.hero-centered {
+    min-height: 65vh;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.hero-centered .hero-identity {
+    width: 100%;
+}
+
+.hero-centered h1 {
+    margin-bottom: 1.5rem;
+}
+
+.hero-centered .bio {
+    margin: 0 auto;
+}
+
+.text-center {
+    text-align: center;
+}

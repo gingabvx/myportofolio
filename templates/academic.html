@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rama - Portfolio</title>
+    <title>Rama - Academics</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
 <body>
     <header class="site-header">
         <div class="container">
-            <a href="#profile" class="brand">Rama</a>
+            <a href="{% url 'landing_page' %}#profile" class="brand">Rama</a>
             <nav>
                 <a href="{% url 'landing_page' %}#profile">Profile</a>
             </nav>
@@ -22,48 +22,66 @@
                 <a href="/projects/">Projects</a>
             </nav>
             <nav>
-                <a href="/academic/">Academics </a>
+                <a href="/academic/">Academics</a>
             </nav>
         </div>
     </header>
 
     <main>
-        <section class="hero" id="academics">
+        <section class="hero academic-section" id="kuliah">
             <div class="container hero-grid">
                 <div class="hero-identity">
-                    <p class="hero-kicker">Computer Science &middot; Universitas Indonesia</p>
-                    <h1>Narendra Rama Prawira</h1>
+                    <p class="hero-kicker">2025 - Present</p>
+                    <h1>Universitas Indonesia</h1>
                 </div>
                 <div class="hero-photo">
                     <div class="photo-block"></div>
-                    <img class="avatar" src="/static/img/test.png" alt="Photo of Rama">
+                    <img class="avatar" src="/static/img/kuliah.jpeg" alt="Photo of Rama at UI">
                 </div>
                 <div class="hero-details">
-                    <p class="bio">A Computer Science student who is passionate about his interest on game development
-                        and web/app development. Always eager to improve my skills and learn new technologies up forward
-                    </p>
-                    <dl class="meta-list">
-                        <div class="meta-row">
-                            <dt>NPM</dt>
-                            <dd>2506606490</dd>
-                        </div>
-                        <div class="meta-row">
-                            <dt>Program</dt>
-                            <dd>S1 Ilmu Komputer</dd>
-                        </div>
-                    </dl>
-                    <div class="social-links">
-                        <a href="https://github.com/gingabvx" class="social-link">GitHub</a>
-                        <a href="https://www.linkedin.com/in/narendra-rama-prawira-b07548266/"
-                            class="social-link">LinkedIn</a>
-                        <a href="mailto:narendraramaprawira@gmail.com" class="social-link">Email</a>
-                    </div>
+                    <p class="bio">Computer Science student. Passionate about game development, web, and mobile app
+                        development. Always eager to improve skills and learn new technologies.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="hero academic-section" id="sma">
+            <div class="container hero-grid">
+                <div class="hero-photo">
+                    <div class="photo-block"></div>
+                    <img class="avatar" src="/static/img/sma.jpeg" alt="Photo of Rama at UI">
+                </div>
+                <div class="hero-identity">
+                    <p class="hero-kicker">2022 - 2025</p>
+                    <h1>SMA Labschool Cirendeu</h1>
+                </div>
+
+                <div class="hero-details">
+                    <p class="bio">Computer Science student. Passionate about game development, web, and mobile app
+                        development. Always eager to improve skills and learn new technologies.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="hero academic-section" id="kuliah">
+            <div class="container hero-grid">
+                <div class="hero-identity">
+                    <p class="hero-kicker">2019 - 2022</p>
+                    <h1>SMPN 85 Jakarta</h1>
+                </div>
+                <div class="hero-photo">
+                    <div class="photo-block"></div>
+                    <img class="avatar" src="/static/img/smp.jpg" alt="Photo of Rama at UI">
+                </div>
+                <div class="hero-details">
+                    <p class="bio">Computer Science student. Passionate about game development, web, and mobile app
+                        development. Always eager to improve skills and learn new technologies.</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer text-center">
         <div class="container">
             <p>&copy; 2026 Rama. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
         </div>

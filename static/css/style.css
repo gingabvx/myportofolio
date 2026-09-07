@@ -177,6 +177,7 @@ h1,
     border-top: 1px solid var(--line);
 }
 
+/* Responsive dasar */
 @media (max-width: 600px) {
     .hero-grid {
         grid-template-columns: 1fr;
@@ -188,6 +189,7 @@ h1,
 
     .hero-photo {
         max-width: 220px;
+        margin: 0 auto;
     }
 
     .social-links {

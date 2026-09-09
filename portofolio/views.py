@@ -1,11 +1,11 @@
 from django.shortcuts import render
 
 
-def landing_page(request):
+def show_main(request):
     return render(request, "index.html")
 
-def academic(request):
+def show_academic(request):
     return render(request, 'academic.html')
 
-def projects(request):
+def show_projects(request):
     return render(request, 'projects.html')

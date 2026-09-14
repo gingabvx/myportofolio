@@ -24,66 +24,29 @@
     </header>
 
     <main>
-        <section class="hero academic-section" id="kuliah">
-            <div class="container hero-grid">
+        {% for academic in academic_list %}
+        <section class="hero academic-section">
+            <div class="container {% cycle 'hero-grid' 'hero-grid-reverse' %}">
                 <div class="hero-identity">
-                    <p class="hero-kicker">2025 - Present</p>
-                    <h1>Universitas Indonesia</h1>
+                    <p class="hero-kicker">{{ academic.period }}</p>
+                    <h1>{{ academic.institution }}</h1>
                 </div>
                 <div class="hero-photo">
                     <div class="photo-block"></div>
-                    <img class="avatar" src="/static/img/kuliah.jpeg" alt="Photo of Rama at UI">
+                    <img class="avatar" src="{{ academic.image }}" alt="Photo of {{ academic.institution }}">
                 </div>
                 <div class="hero-details">
-                    <p class="bio">Currently, I am an undergraduate student majoring in Computer Science at Universitas
-                        Indonesia. My primary academic objectives are maintaining a high GPA and achieving success in
-                        technical competitions.</p>
+                    <p class="bio">{{ academic.description }}</p>
                 </div>
             </div>
         </section>
-
-        <section class="hero academic-section" id="sma">
-            <div class="container hero-grid-reverse">
-                <div class="hero-photo">
-                    <div class="photo-block"></div>
-                    <img class="avatar" src="/static/img/sma.jpeg" alt="Photo of Rama at UI">
-                </div>
-                <div class="hero-identity">
-                    <p class="hero-kicker">2022 - 2025</p>
-                    <h1>SMA Labschool Cirendeu</h1>
-                </div>
-
-                <div class="hero-details">
-                    <p class="bio">
-                        During high school, I prioritized academic excellence while actively expanding my
-                        extracurricular involvement. In my second year, I joined the Student Consultative Assembly (MPK)
-                        to further cultivate my interests in Information Technology and photography. By my final year, I
-                        focused intensively on preparing for the UTBK to successfully secure admission into my current
-                        university program.
-                    </p>
-                </div>
+        {% empty %}
+        <section class="hero academic-section">
+            <div class="container">
+                <p class="empty-state">No academic records are currently available.</p>
             </div>
         </section>
-
-        <section class="hero academic-section" id="kuliah">
-            <div class="container hero-grid">
-                <div class="hero-identity">
-                    <p class="hero-kicker">2019 - 2022</p>
-                    <h1>SMPN 85 Jakarta</h1>
-                </div>
-                <div class="hero-photo">
-                    <div class="photo-block"></div>
-                    <img class="avatar" src="/static/img/smp.jpg" alt="Photo of Rama at UI">
-                </div>
-                <div class="hero-details">
-                    <p class="bio"> My passion for technology originated in junior high school. Although the COVID-19
-                        pandemic limited typical school activities, I utilized that period to complete an intensive
-                        Python programming bootcamp, which ultimately sparked my strong interest in software
-                        development.
-                    </p>
-                </div>
-            </div>
-        </section>
+        {% endfor %}
     </main>
 
     <footer class="site-footer text-center">

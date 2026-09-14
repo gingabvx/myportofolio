@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from main.models import Projects
+from main.models import Projects, Academic
 
 
 def show_main(request):
@@ -17,7 +17,11 @@ def show_main(request):
     return render(request, "index.html", context)
 
 def show_academic(request):
-    return render(request, 'academic.html')
+    context = {
+            "name": "Rama",
+            "academic_list": Academic.objects.all(),
+        }
+    return render(request, 'academic.html', context)
 
 def show_projects(request):
     context = {

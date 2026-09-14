@@ -22,3 +22,17 @@ class Projects(models.Model):
     @property
     def is_ongoing(self):
         return self.ended_at is None
+
+class Academic(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    institution = models.CharField(max_length=255)
+    period = models.CharField(max_length=100)
+    description = models.TextField()
+    image = models.CharField(max_length=255, blank=True, null=True)
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.institution

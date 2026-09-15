@@ -1,59 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rama - Academics</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-
-<body>
-    <header class="site-header">
-        <div class="container">
-            <a href="{% url 'main:show_main' %}#profile" class="brand">Rama</a>
-            <nav>
-                <a href="{% url 'main:show_main' %}">Profile</a>
-                <a href="{% url 'main:show_projects' %}">Projects</a>
-                <a href="{% url 'main:show_academic' %}">Academics</a>
-            </nav>
-        </div>
-    </header>
-
-    <main>
-        {% for academic in academic_list %}
-        <section class="hero academic-section">
-            <div class="container {% cycle 'hero-grid' 'hero-grid-reverse' %}">
-                <div class="hero-identity">
-                    <p class="hero-kicker">{{ academic.period }}</p>
-                    <h1>{{ academic.institution }}</h1>
-                </div>
-                <div class="hero-photo">
-                    <div class="photo-block"></div>
-                    <img class="avatar" src="{{ academic.image }}" alt="Photo of {{ academic.institution }}">
-                </div>
-                <div class="hero-details">
-                    <p class="bio">{{ academic.description }}</p>
-                </div>
+{% extends 'base.html' %}
+{% block content %}
+<main>
+    {% for academic in academic_list %}
+    <section class="hero academic-section">
+        <div class="container {% cycle 'hero-grid' 'hero-grid-reverse' %}">
+            <div class="hero-identity">
+                <p class="hero-kicker">{{ academic.period }}</p>
+                <h1>{{ academic.institution }}</h1>
             </div>
-        </section>
-        {% empty %}
-        <section class="hero academic-section">
-            <div class="container">
-                <p class="empty-state">No academic records are currently available.</p>
+            <div class="hero-photo">
+                <div class="photo-block"></div>
+                <img class="avatar" src="{{ academic.image }}" alt="Photo of {{ academic.institution }}">
             </div>
-        </section>
-        {% endfor %}
-    </main>
-
-    <footer class="site-footer text-center">
-        <div class="container">
-            <p>&copy; 2026 Rama. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+            <div class="hero-details">
+                <p class="bio">{{ academic.description }}</p>
+            </div>
         </div>
-    </footer>
-</body>
-
-</html>
+    </section>
+    {% empty %}
+    <section class="hero academic-section">
+        <div class="container">
+            <p class="empty-state">No academic records are currently available.</p>
+        </div>
+    </section>
+    {% endfor %}
+</main>
+{% endblock content %}

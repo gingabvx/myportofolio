@@ -55,7 +55,7 @@ class MainTest(TestCase):
         self.assertContains(response, "No projects are currently available.")
 
     def test_completed_project(self):
-        self.projects.ended_at = timezone.now()
+        self.projects.status = "completed"
         self.projects.save()
         response = self.client.get(reverse("main:show_projects"))
 

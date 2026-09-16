@@ -155,6 +155,3 @@ MAILERS = {
 }
 
 # gunakan https:// untuk trailing urlnya
-CSRF_TRUSTED_ORIGINS = ["https://narendra-rama51-myportofolio.pws.cs.ui.ac.id/"]
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True

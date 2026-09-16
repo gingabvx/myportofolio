@@ -1,52 +1,45 @@
-from django.forms import ModelForm, TextInput, Textarea, URLInput
+from django.forms import ModelForm, TextInput, Textarea, Select
 
-from main.models import Project
+from main.models import Projects
 
 class ProjectForm(ModelForm):
     class Meta:
-        model = Project
+        model = Projects
         fields = [
             "title",
             "description",
-            "tech_stack",
-            "project_url",
-            "project_image_url",
+            "category",
+            "status",
         ]
 
         labels = {
-            "title": "Nama Proyek",
-            "description": "Deskripsi Proyek",
-            "tech_stack": "Teknologi yang Digunakan",
-            "project_url": "URL Proyek",
-            "project_image_url": "URL Gambar Proyek",
+            "title": "Project Name",
+            "description": "Project Description",
+            "category": "Project Category",
+            "status": "Project Status",
         }
 
         widgets = {
             "title": TextInput(
                 attrs={
-                    "placeholder": "Portfolio Website",
+                    "placeholder": "Website Portofolio",
                     "maxlength": 255,
                 }
             ),
             "description": Textarea(
                 attrs={
-                    "placeholder": "Ceritakan Proyekmu",
+                    "placeholder": "Describe your project",
                     "rows": 3,
                 }
             ),
-            "tech_stack": TextInput(
+            "category": Select(
                 attrs={
-                    "placeholder": "Django, Python, HTML, CSS",
+                    "class": "form-select",
                 }
             ),
-            "project_url": URLInput(
+            "status": Select(
                 attrs={
-                    "placeholder": "https://github.com/kakBurhan/burhanquestv4",
-                }
-            ),
-            "project_image_url": URLInput(
-                attrs={
-                    "placeholder": "https://drive.google.com/thumbnail?id=...&sz=w1000",
+                    "class": "form-select",
                 }
             ),
         }

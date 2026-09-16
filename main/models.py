@@ -19,7 +19,6 @@ class Projects(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     category = models.CharField(max_length=20, choices=PROJECTS_CHOICES, default='other')
-    thumbnail = models.URLField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=PROJECTS_STATUS, default='ongoing')
 
     def __str__(self):

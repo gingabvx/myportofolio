@@ -20,12 +20,16 @@ def show_main(request):
     }
     return render(request, "index.html", context)
 
+# ACADEMIC FUNCTION
+
 def show_academic(request):
     context = {
             "name": "Rama",
             "academic_list": Academic.objects.all(),
         }
     return render(request, 'academic.html', context)
+
+# PROJECTS FUNCTION
 
 def show_projects(request):
     json_response = get_projects_json(request)

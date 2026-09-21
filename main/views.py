@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from main.models import Projects, Academic
 
-from main.forms import ProjectForm
+from main.forms import ProjectForm, AcademicForm
 
 def show_main(request):
     context = {
@@ -23,11 +23,74 @@ def show_main(request):
 # ACADEMIC FUNCTION
 
 def show_academic(request):
+    json_response = get_academics_json(request)
+    
+    academics = serializers.deserialize(
+        "json",
+        json_response.content.decode("utf-8"),
+    )
+    academic_list = [item.object for item in academics]
+    title_query = request.GET.get("title", "").strip()
+
     context = {
-            "name": "Rama",
-            "academic_list": Academic.objects.all(),
-        }
-    return render(request, 'academic.html', context)
+        "name": "Rama",
+        "academic_list": academic_list,
+        "title_query": title_query,
+    }
+    return render(request, "academic.html", context)
+
+def create_academic(request):
+    form = AcademicForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Riwayat akademik baru berhasil ditambahkan!")
+        return redirect("main:show_academic")
+
+    context = {
+        "name": "Rama",
+        "form": form,
+        "form_title": "Add Academic Record",
+        "button_text": "Add Academic",
+    }
+    return render(request, "academic_form.html", context)
+
+def edit_academic(request, academic_id):
+    academic = get_object_or_404(Academic, pk=academic_id)
+    form = AcademicForm(request.POST or None, instance=academic)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Riwayat akademik berhasil diperbarui!")
+        return redirect("main:show_academic")
+
+    context = {
+        "name": "Rama",
+        "form": form,
+        "form_title": f"Edit {academic.institution}",
+        "button_text": "Save Changes",
+    }
+    return render(request, "academic_form.html", context)
+
+def delete_academic(request, academic_id):
+    academic = get_object_or_404(Academic, pk=academic_id)
+
+    if request.method == "POST":
+        academic.delete()
+        messages.success(request, "Riwayat akademik berhasil dihapus!")
+        return redirect("main:show_academic")
+
+    return redirect("main:show_academic")
+
+def get_academics_json(request):
+    title_query = request.GET.get("title", "").strip()
+    academics = Academic.objects.all()
+
+    if title_query:
+        academics = academics.filter(institution__icontains=title_query)
+
+    academic_json = serializers.serialize("json", academics)
+    return HttpResponse(academic_json, content_type="application/json")
 
 # PROJECTS FUNCTION
 

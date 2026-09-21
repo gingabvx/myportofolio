@@ -4,28 +4,59 @@
 {% endblock meta %}
 {% block content %}
 <main>
-    {% for academic in academic_list %}
-    <section class="hero academic-section">
-        <div class="container {% cycle 'hero-grid' 'hero-grid-reverse' %}">
-            <div class="hero-identity">
-                <p class="hero-kicker">{{ academic.period }}</p>
-                <h1>{{ academic.institution }}</h1>
-            </div>
-            <div class="hero-photo">
-                <div class="photo-block"></div>
-                <img class="avatar" src="{{ academic.image }}" alt="Photo of {{ academic.institution }}">
-            </div>
-            <div class="hero-details">
-                <p class="bio">{{ academic.description }}</p>
-            </div>
-        </div>
-    </section>
-    {% empty %}
-    <section class="hero academic-section">
+    <section class="projects-section" id="academics">
         <div class="container">
-            <p class="empty-state">No academic records are currently available.</p>
+            <p class="section-kicker">My Educational Background</p>
+            
+            <div class="projects-header"> 
+                <h1>Academics</h1>
+                <a href="{% url 'main:create_academic' %}" class="button projects-add-button">
+                    <span aria-hidden="true">+</span>
+                    Add Academic
+                </a>
+            </div>
+            
+            <form method="get" action="{% url 'main:show_academic' %}" class="projects-search">
+                <input type="search"
+                       name="q"
+                       value="{{ search_query }}"
+                       placeholder="Cari berdasarkan institusi/sekolah"
+                       class="projects-search__input"
+                       aria-label="Cari berdasarkan nama institusi">
+                <button type="submit" class="button">Search</button>
+            </form>
+
+            <div class="projects-grid">
+                {% for academic in academic_list %}
+                <article class="projects-card">
+                    {% if academic.image %}
+                        <img src="{{ academic.image }}" alt="Photo of {{ academic.institution }}" class="projects-image" style="margin-bottom: 0.8rem; aspect-ratio: 16/9; object-fit: cover;">
+                    {% endif %}
+
+                    <span class="projects-category">
+                        {{ academic.period }}
+                    </span>
+                    <h2>{{ academic.institution }}</h2>
+                    <p class="projects-description">
+                        {{ academic.description }}
+                    </p>
+
+                    <div class="projects-card-actions">
+                        <div class="projects-actions">
+                            <a href="{% url 'main:edit_academic' academic.id %}" class="button">Edit</a>
+                            {% include 'components/academic_delete_modal.html' %}
+                        </div>
+                    </div>
+                </article>
+                {% empty %}
+                    {% if search_query %}
+                        <p class="empty-state">Tidak ada data akademik yang cocok dengan pencarian.</p>
+                    {% else %}
+                        <p class="empty-state">Belum ada riwayat akademik yang ditambahkan.</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
     </section>
-    {% endfor %}
 </main>
 {% endblock content %}

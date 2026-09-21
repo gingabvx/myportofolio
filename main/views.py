@@ -30,12 +30,12 @@ def show_academic(request):
         json_response.content.decode("utf-8"),
     )
     academic_list = [item.object for item in academics]
-    title_query = request.GET.get("title", "").strip()
+    query = request.GET.get("q", "").strip()
 
     context = {
         "name": "Rama",
         "academic_list": academic_list,
-        "title_query": title_query,
+        "search_query": query,
     }
     return render(request, "academic.html", context)
 
@@ -83,11 +83,11 @@ def delete_academic(request, academic_id):
     return redirect("main:show_academic")
 
 def get_academics_json(request):
-    title_query = request.GET.get("title", "").strip()
+    query = request.GET.get("q", "").strip()
     academics = Academic.objects.all()
 
-    if title_query:
-        academics = academics.filter(institution__icontains=title_query)
+    if query:
+        academics = academics.filter(institution__icontains=query)
 
     academic_json = serializers.serialize("json", academics)
     return HttpResponse(academic_json, content_type="application/json")
@@ -126,7 +126,7 @@ def create_project(request):
     return render(request, "projects_form.html", context)
 
 def get_projects_json(request):
-    title_query = request.GET.get("title", "").strip()
+    title_query = request.GET.get("institution", "").strip()
     projects = Projects.objects.all()
 
     if title_query:

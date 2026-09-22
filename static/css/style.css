@@ -559,3 +559,15 @@ h1,
 .form-group select {
     cursor: pointer;
 }
+
+.projects-card-actions .projects-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+}
+
+.projects-card-actions .button {
+    font-size: 0.85rem;
+    padding: 0.45rem 0.85rem;
+}

@@ -33,3 +33,11 @@ https://share.gemini.google/RB0PeBvM1hf3
 Saya menggunakan Gemini AI untuk menanyakan sintaks dan memberikan hint. Di html saya, saya hanya kekurangan satu sintaks untuk menampilkan grid yang berbeda secara selang seling. Oleh karena itu, saya menanyakan sintaks dan hint untuk memakainya ke Gemini AI. Di akhir saya mengonfirmasi kalau perubahan yang saya lakukan di academic.html tidak memperlukan perubahan di cssnya.
 https://share.gemini.google/tAauFX55OXzA
 
+### Tugas 3
+1. Kita menggunakan ModelForm karena Django secara otomatis membuatkan struktur form dan validasi data langsung dari model yang sudah kita buat sehingga kita tidak perlu menulis tag input HTML dan logika validasinya secara manual dari nol. Lalu, {% csrf_token %} wajib ditambahkan untuk melindungi aplikasi dari serangan CSRF dengan memastikan bahwa request POST yang masuk benar-benar berasal dari website kita, bukan dari pihak luar.
+2. JSON lebih disukai daripada XML dalam pengembangan web modern karena formatnya jauh lebih ringkas, ringan, dan mudah dibaca manusia karena struktur pasangan key-value. Selain itu, JSON dapat langsung diparse secara native dan cepat oleh javascript di sisi frontend tanpa membutuhkan parser XML yang rumit.
+3. Alur dimulai saat client mengakses rute API, lalu fungsi view mengambil data dari database melalui model Django, kemudian data tersebut diubah ke bentuk teks JSON lewat fungsi serializer, dan akhirnya dikembalikan sebagai respons menggunakan HttpResponse dengan tipe application/json. Proses serialization wajib dilakukan karena data yang diambil dari database masih berbentuk objek Python (QuerySet), yang tidak bisa langsung dikirimkan atau dipahami oleh browser atau aplikasi lain melalui protokol HTTP sebelum diubah ke format teks standar seperti JSON.
+
+#### Disclosure AI
+Saya menggunakan Gemini AI untuk menanyakan sintaks dan memberikan hint. Saya membutuhkan beberapa sintaks untuk field2 baru di academic dan beberapa konfirmasi ulang untuk code yang baru saya buat.
+https://share.gemini.google/1uxH14Cc2W2R

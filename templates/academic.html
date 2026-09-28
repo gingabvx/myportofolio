@@ -44,7 +44,7 @@
                     <div class="projects-card-actions">
                         {% include 'components/academic_star.html' %}
 
-                        {% if user.is_superuser %}
+                        {% if can_edit %}
                         <div class="projects-actions">
                             <a href="{% url 'main:edit_academic' academic.id %}" class="button">Edit</a>
                             {% if user.is_superuser %}
@@ -58,7 +58,7 @@
                 {% if search_query %}
                 <p class="empty-state">Tidak ada data akademik yang cocok dengan pencarian.</p>
                 {% else %}
-                <p class="empty-state">Belum ada riwayat akademik yang ditambahkan.</p>
+                <p class="empty-state">No academic records are currently available.</p>
                 {% endif %}
                 {% endfor %}
             </div>

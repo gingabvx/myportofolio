@@ -10,6 +10,7 @@ urlpatterns = [
     # Projects Routes
     path("projects/add/", views.create_project, name="create_project"),
     path('projects/', views.show_projects, name='show_projects'),
+    path("projects/<uuid:project_id>/edit/", views.edit_project, name="edit_project"),
     path("projects/<uuid:project_id>/delete/", views.delete_project, name="delete_project"),
     path("api/projects/", views.get_projects_json, name="get_projects_json"),
     path("projects/<uuid:project_id>/star/", views.toggle_star, name="toggle_star"),

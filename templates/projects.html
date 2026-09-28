@@ -37,9 +37,17 @@
 
                     <div class="projects-card-actions">
                         <p class="projects-status">{{ projects.get_status_display }}</p>
-                        {% include "components/project_star.html" with project=project %}
-                        {% if user.is_superuser %}
-                        {% include 'components/project_delete_modal.html' %}
+                        {% include "components/project_star.html" with project=projects %}
+
+                        {% if can_edit or user.is_superuser %}
+                        <div class="projects-actions">
+                            {% if can_edit %}
+                            <a href="{% url 'main:edit_project' projects.id %}" class="button">Edit</a>
+                            {% endif %}
+                            {% if user.is_superuser %}
+                            {% include 'components/project_delete_modal.html' %}
+                            {% endif %}
+                        </div>
                         {% endif %}
                     </div>
                 </article>
@@ -47,7 +55,7 @@
                 {% if title_query %}
                 <p class="empty-state">Tidak ada proyek dengan nama tersebut.</p>
                 {% else %}
-                <p class="empty-state">Belum ada proyek yang ditambahkan.</p>
+                <p class="empty-state">No projects are currently available.</p>
                 {% endif %}
                 {% endfor %}
             </div>

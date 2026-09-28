@@ -7,12 +7,12 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 import datetime
 
 from main.models import Projects, Academic
 
 from main.forms import ProjectForm, AcademicForm
+from main.permissions import can_edit, editor_required, superuser_required
 
 def show_main(request):
     last_login = request.COOKIES.get('last_login', 'Belum ada sesi login / Cookie tidak ditemukan')
@@ -45,15 +45,13 @@ def show_academic(request):
         "name": "Rama",
         "academic_list": academic_list,
         "search_query": query,
+        "can_edit": can_edit(request.user),
     }
     return render(request, "academic.html", context)
 
 
-@login_required(login_url="/login/") 
+@superuser_required
 def create_academic(request):
-    if not request.user.is_superuser:
-        raise PermissionDenied
-    
     form = AcademicForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -69,11 +67,8 @@ def create_academic(request):
     }
     return render(request, "academic_form.html", context)
 
-@login_required(login_url="/login/") 
+@editor_required
 def edit_academic(request, academic_id):
-    if not request.user.is_superuser:
-            raise PermissionDenied
-    
     academic = get_object_or_404(Academic, pk=academic_id)
     form = AcademicForm(request.POST or None, instance=academic)
 
@@ -90,11 +85,8 @@ def edit_academic(request, academic_id):
     }
     return render(request, "academic_form.html", context)
 
-@login_required(login_url="/login/") 
+@superuser_required
 def delete_academic(request, academic_id):
-    if not request.user.is_superuser:
-        raise PermissionDenied
-    
     academic = get_object_or_404(Academic, pk=academic_id)
 
     if request.method == "POST":
@@ -111,7 +103,7 @@ def get_academics_json(request):
     if query:
         academics = academics.filter(institution__icontains=query)
 
-    academic_json = serializers.serialize("json", academics, use_natural_foreign_keys=True)
+    academic_json = serializers.serialize("json", academics)
     return HttpResponse(academic_json, content_type="application/json")
 
 @login_required(login_url="/login/")
@@ -142,14 +134,12 @@ def show_projects(request):
         "name": "Rama",
         "projects_list": projects,
         "title_query": title_query,
+        "can_edit": can_edit(request.user),
     }
     return render(request, "projects.html", context)
 
-@login_required(login_url="/login/") 
+@superuser_required
 def create_project(request):
-    if not request.user.is_superuser:
-        raise PermissionDenied
-    
     form = ProjectForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -160,6 +150,26 @@ def create_project(request):
     context = {
         "name": "Rama",
         "form": form,
+        "form_title": "Add New Projects",
+        "button_text": "Add Project",
+    }
+    return render(request, "projects_form.html", context)
+
+@editor_required
+def edit_project(request, project_id):
+    project = get_object_or_404(Projects, pk=project_id)
+    form = ProjectForm(request.POST or None, instance=project)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Project berhasil diperbarui!")
+        return redirect("main:show_projects")
+
+    context = {
+        "name": "Rama",
+        "form": form,
+        "form_title": f"Edit {project.title}",
+        "button_text": "Save Changes",
     }
     return render(request, "projects_form.html", context)
 
@@ -173,11 +183,8 @@ def get_projects_json(request):
     projects_json = serializers.serialize("json", projects, use_natural_foreign_keys=True)
     return HttpResponse(projects_json, content_type="application/json")
 
-@login_required(login_url="/login/") 
+@superuser_required
 def delete_project(request, project_id):
-    if not request.user.is_superuser:
-        raise PermissionDenied
-    
     project = get_object_or_404(Projects, pk=project_id)
 
     if request.method == "POST":

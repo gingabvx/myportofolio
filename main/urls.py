@@ -17,4 +17,9 @@ urlpatterns = [
     path('academic/<uuid:academic_id>/edit/', views.edit_academic, name='edit_academic'),
     path('academic/<uuid:academic_id>/delete/', views.delete_academic, name='delete_academic'),
     path("api/academic/", views.get_academics_json, name="get_academics_json"),
+
+    path("register/", views.register, name="register"),
+    path("login/", views.login_user, name="login"),
+    path("logout/", views.logout_user, name="logout"),
+    path("projects/<uuid:project_id>/star/", views.toggle_star, name="toggle_star"),
 ]

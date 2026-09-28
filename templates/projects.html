@@ -1,28 +1,26 @@
 {% extends 'base.html' %}
 {% block meta %}
-    <title>Project - {{ name }}</title>
+<title>Project - {{ name }}</title>
 {% endblock meta %}
 {% block content %}
 <main>
     <section class="projects-section" id="projects">
         <div class="container">
             <p class="section-kicker">My Project Journey So Far</p>
-            
-            <div class="projects-header"> 
+
+            <div class="projects-header">
                 <h1>Projects</h1>
+                {% if user.is_superuser %}
                 <a href="{% url 'main:create_project' %}" class="button projects-add-button">
                     <span aria-hidden="true">+</span>
                     Add Project
                 </a>
+                {% endif %}
             </div>
-            
+
             <form method="get" action="{% url 'main:show_projects' %}" class="projects-search">
-                <input type="search"
-                       name="title"
-                       value="{{ title_query }}"
-                       placeholder="Cari berdasarkan nama proyek"
-                       class="projects-search__input"
-                       aria-label="Cari berdasarkan nama proyek">
+                <input type="search" name="title" value="{{ title_query }}" placeholder="Cari berdasarkan nama proyek"
+                    class="projects-search__input" aria-label="Cari berdasarkan nama proyek">
                 <button type="submit" class="button">Search</button>
             </form>
 
@@ -39,15 +37,18 @@
 
                     <div class="projects-card-actions">
                         <p class="projects-status">{{ projects.get_status_display }}</p>
+                        {% include "components/project_star.html" with project=project %}
+                        {% if user.is_superuser %}
                         {% include 'components/project_delete_modal.html' %}
+                        {% endif %}
                     </div>
                 </article>
                 {% empty %}
-                    {% if title_query %}
-                        <p class="empty-state">Tidak ada proyek dengan nama tersebut.</p>
-                    {% else %}
-                        <p class="empty-state">Belum ada proyek yang ditambahkan.</p>
-                    {% endif %}
+                {% if title_query %}
+                <p class="empty-state">Tidak ada proyek dengan nama tersebut.</p>
+                {% else %}
+                <p class="empty-state">Belum ada proyek yang ditambahkan.</p>
+                {% endif %}
                 {% endfor %}
             </div>
         </div>

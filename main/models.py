@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.contrib.auth.models import User  
 
 class Projects(models.Model):
     PROJECTS_CHOICES = [
@@ -14,6 +15,10 @@ class Projects(models.Model):
         ('completed', 'Completed'),
         ('abandoned', 'Abandoned'),
     ]
+
+    starred_by = models.ManyToManyField(
+        User, related_name="starred_projects", blank=True
+    )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)

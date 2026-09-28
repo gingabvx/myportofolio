@@ -51,11 +51,14 @@ def show_academic(request):
 
 @login_required(login_url="/login/") 
 def create_academic(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    
     form = AcademicForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
         form.save()
-        messages.success(request, "Riwayat akademik baru berhasil ditambahkan!")
+        messages.success(request, "New Academic Record Added!")
         return redirect("main:show_academic")
 
     context = {
@@ -68,6 +71,9 @@ def create_academic(request):
 
 @login_required(login_url="/login/") 
 def edit_academic(request, academic_id):
+    if not request.user.is_superuser:
+            raise PermissionDenied
+    
     academic = get_object_or_404(Academic, pk=academic_id)
     form = AcademicForm(request.POST or None, instance=academic)
 
@@ -86,6 +92,9 @@ def edit_academic(request, academic_id):
 
 @login_required(login_url="/login/") 
 def delete_academic(request, academic_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    
     academic = get_object_or_404(Academic, pk=academic_id)
 
     if request.method == "POST":
@@ -102,11 +111,23 @@ def get_academics_json(request):
     if query:
         academics = academics.filter(institution__icontains=query)
 
-    academic_json = serializers.serialize("json", academics)
+    academic_json = serializers.serialize("json", academics, use_natural_foreign_keys=True)
     return HttpResponse(academic_json, content_type="application/json")
 
-# PROJECTS FUNCTION
+@login_required(login_url="/login/")
+def toggle_star_academic(request, academic_id):
+    academic = get_object_or_404(Academic, pk=academic_id)
 
+    if request.method == "POST":
+        if request.user in academic.starred_by.all():
+            academic.starred_by.remove(request.user)
+        else:
+            academic.starred_by.add(request.user)
+
+    return redirect("main:show_academic")
+
+
+# PROJECTS FUNCTION
 def show_projects(request):
     json_response = get_projects_json(request)
 
@@ -166,7 +187,19 @@ def delete_project(request, project_id):
 
     return redirect("main:show_projects")
 
-# ...
+@login_required(login_url="/login/")
+def toggle_star(request, project_id):
+    projects = get_object_or_404(Projects, pk=project_id)
+
+    if request.method == "POST":
+        if request.user in projects.starred_by.all():
+            projects.starred_by.remove(request.user)
+        else:
+            projects.starred_by.add(request.user)
+
+    return redirect("main:show_projects")
+
+# Auth
 
 def register(request):
     form = UserCreationForm(request.POST or None)
@@ -204,16 +237,3 @@ def logout_user(request):
     response.delete_cookie('last_login')
     return response
 
-@login_required(login_url="/login/")
-def toggle_star(request, project_id):
-    projects = get_object_or_404(Projects, pk=project_id)
-
-    if request.method == "POST":
-        # Kalau akun ini sudah pernah memberi star, batalkan star-nya.
-        # Kalau belum, tambahkan star.
-        if request.user in projects.starred_by.all():
-            projects.starred_by.remove(request.user)
-        else:
-            projects.starred_by.add(request.user)
-
-    return redirect("main:show_projects")

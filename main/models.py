@@ -34,6 +34,10 @@ class Projects(models.Model):
         return self.status == 'ongoing'
 
 class Academic(models.Model):
+    starred_by = models.ManyToManyField(
+        User, related_name="starred_academics", blank=True
+    )   
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     institution = models.CharField(max_length=255)
     period = models.CharField(max_length=100)

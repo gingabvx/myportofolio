@@ -1,28 +1,27 @@
 {% extends 'base.html' %}
 {% block meta %}
-    <title>Academics - {{ name }}</title>
+<title>Academics - {{ name }}</title>
 {% endblock meta %}
 {% block content %}
 <main>
     <section class="projects-section" id="academics">
         <div class="container">
             <p class="section-kicker">My Educational Background</p>
-            
-            <div class="projects-header"> 
+
+            <div class="projects-header">
                 <h1>Academics</h1>
+                {% if user.is_superuser %}
                 <a href="{% url 'main:create_academic' %}" class="button projects-add-button">
                     <span aria-hidden="true">+</span>
                     Add Academic
                 </a>
+                {% endif %}
             </div>
-            
+
             <form method="get" action="{% url 'main:show_academic' %}" class="projects-search">
-                <input type="search"
-                       name="q"
-                       value="{{ search_query }}"
-                       placeholder="Cari berdasarkan institusi/sekolah"
-                       class="projects-search__input"
-                       aria-label="Cari berdasarkan nama institusi">
+                <input type="search" name="q" value="{{ search_query }}"
+                    placeholder="Cari berdasarkan institusi/sekolah" class="projects-search__input"
+                    aria-label="Cari berdasarkan nama institusi">
                 <button type="submit" class="button">Search</button>
             </form>
 
@@ -30,7 +29,8 @@
                 {% for academic in academic_list %}
                 <article class="projects-card">
                     {% if academic.image %}
-                        <img src="{{ academic.image }}" alt="Photo of {{ academic.institution }}" class="projects-image" style="margin-bottom: 0.8rem; aspect-ratio: 16/9; object-fit: cover;">
+                    <img src="{{ academic.image }}" alt="Photo of {{ academic.institution }}" class="projects-image"
+                        style="margin-bottom: 0.8rem; aspect-ratio: 16/9; object-fit: cover;">
                     {% endif %}
 
                     <span class="projects-category">
@@ -42,18 +42,24 @@
                     </p>
 
                     <div class="projects-card-actions">
+                        {% include 'components/academic_star.html' %}
+
+                        {% if user.is_superuser %}
                         <div class="projects-actions">
                             <a href="{% url 'main:edit_academic' academic.id %}" class="button">Edit</a>
+                            {% if user.is_superuser %}
                             {% include 'components/academic_delete_modal.html' %}
+                            {% endif %}
                         </div>
+                        {% endif %}
                     </div>
                 </article>
                 {% empty %}
-                    {% if search_query %}
-                        <p class="empty-state">Tidak ada data akademik yang cocok dengan pencarian.</p>
-                    {% else %}
-                        <p class="empty-state">Belum ada riwayat akademik yang ditambahkan.</p>
-                    {% endif %}
+                {% if search_query %}
+                <p class="empty-state">Tidak ada data akademik yang cocok dengan pencarian.</p>
+                {% else %}
+                <p class="empty-state">Belum ada riwayat akademik yang ditambahkan.</p>
+                {% endif %}
                 {% endfor %}
             </div>
         </div>

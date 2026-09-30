@@ -1,4 +1,6 @@
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm, TextInput, Textarea, Select, NumberInput
+from django.utils.html import strip_tags
 
 from main.models import Projects, Academic
 
@@ -43,6 +45,19 @@ class ProjectForm(ModelForm):
                 }
             ),
         }
+
+    def clean_title(self):
+        title = strip_tags(self.cleaned_data["title"]).strip()
+        if not title:
+            raise ValidationError("Nama proyek tidak boleh hanya berisi tag HTML.")
+        return title
+
+    def clean_description(self):
+        description = strip_tags(self.cleaned_data["description"]).strip()
+        if not description:
+            raise ValidationError("Deskripsi proyek tidak boleh hanya berisi tag HTML.")
+        return description
+
 
 class AcademicForm(ModelForm):
     class Meta:

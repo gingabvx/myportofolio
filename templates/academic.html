@@ -18,51 +18,195 @@
                 {% endif %}
             </div>
 
-            <form method="get" action="{% url 'main:show_academic' %}" class="projects-search">
-                <input type="search" name="q" value="{{ search_query }}"
+            <form id="academic-search-form" class="projects-search">
+                <input type="search" id="search-input" name="q" value="{{ search_query }}"
                     placeholder="Cari berdasarkan institusi/sekolah" class="projects-search__input"
                     aria-label="Cari berdasarkan nama institusi">
                 <button type="submit" class="button">Search</button>
             </form>
 
-            <div class="projects-grid">
-                {% for academic in academic_list %}
-                <article class="projects-card">
-                    {% if academic.image %}
-                    <img src="{{ academic.image }}" alt="Photo of {{ academic.institution }}" class="projects-image"
-                        style="margin-bottom: 0.8rem; aspect-ratio: 16/9; object-fit: cover;">
-                    {% endif %}
-
-                    <span class="projects-category">
-                        {{ academic.period }}
-                    </span>
-                    <h2>{{ academic.institution }}</h2>
-                    <p class="projects-description">
-                        {{ academic.description }}
-                    </p>
-
-                    <div class="projects-card-actions">
-                        {% include 'components/academic_star.html' %}
-
-                        {% if can_edit %}
-                        <div class="projects-actions">
-                            <a href="{% url 'main:edit_academic' academic.id %}" class="button">Edit</a>
-                            {% if user.is_superuser %}
-                            {% include 'components/academic_delete_modal.html' %}
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                    </div>
-                </article>
-                {% empty %}
-                {% if search_query %}
-                <p class="empty-state">Tidak ada data akademik yang cocok dengan pencarian.</p>
-                {% else %}
-                <p class="empty-state">No academic records are currently available.</p>
-                {% endif %}
-                {% endfor %}
+            <!-- Loading State -->
+            <div id="loading" class="empty-state hide">
+                <p>Memuat data akademik...</p>
             </div>
+
+            <!-- Error State -->
+            <div id="error" class="empty-state hide">
+                <p>Gagal memuat data akademik. Silakan coba lagi.</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty" class="empty-state hide">
+                <p>Belum ada data akademik yang ditambahkan atau ditemukan.</p>
+            </div>
+
+            <!-- Academic Grid -->
+            <div id="grid" class="projects-grid hide"></div>
         </div>
     </section>
 </main>
+
+<script>
+    // Konfigurasi
+    const BASE_ACADEMICS_ENDPOINT = "{% url 'main:get_academics_json' %}";
+    const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+    const CAN_EDIT = "{{ can_edit|yesno:'true,false' }}" === "true";
+    let academicsAbortController;
+
+    // Elemen DOM
+    const loadingState = document.getElementById('loading');
+    const errorState = document.getElementById('error');
+    const emptyState = document.getElementById('empty');
+    const gridContainer = document.getElementById('grid');
+    const searchForm = document.getElementById('academic-search-form');
+    const searchInput = document.getElementById('search-input');
+
+    // Menyembunyikan/Menampilkan section halaman
+    function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+        loadingState.classList.toggle('hide', !showLoading);
+        errorState.classList.toggle('hide', !showError);
+        emptyState.classList.toggle('hide', !showEmpty);
+        gridContainer.classList.toggle('hide', !showGrid);
+    }
+
+    // Mengubah karakter khusus HTML menjadi entity agar ditampilkan sebagai teks
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    // Membuat elemen card academic (escapeHtml dan getCookie berasal dari static/js/utils.js)
+    function buildAcademicCardElement(item) {
+        const academic = item.fields;
+        const academicId = item.pk;
+
+        const articleElement = document.createElement('article');
+        articleElement.className = 'projects-card';
+
+        // Dummy UUID digunakan untuk digantikan oleh ID asli dari data JSON
+        const DUMMY_UUID = '00000000-0000-0000-0000-000000000000';
+        const editUrl = "{% url 'main:edit_academic' '00000000-0000-0000-0000-000000000000' %}"
+            .replace(DUMMY_UUID, academicId);
+        const deleteUrl = "{% url 'main:delete_academic' '00000000-0000-0000-0000-000000000000' %}"
+            .replace(DUMMY_UUID, academicId);
+        const starUrl = "{% url 'main:toggle_star_academic' '00000000-0000-0000-0000-000000000000' %}"
+            .replace(DUMMY_UUID, academicId);
+
+        const imageHtml = academic.image
+            ? `<img src="${escapeHtml(academic.image)}" alt="Photo of ${escapeHtml(academic.institution)}" class="projects-image"
+                    style="margin-bottom: 0.8rem; aspect-ratio: 16/9; object-fit: cover;">`
+            : '';
+
+        const editHtml = CAN_EDIT
+            ? `<a href="${editUrl}" class="button">Edit</a>`
+            : '';
+
+        const deleteHtml = IS_SUPERUSER
+            ? `<form method="post" action="${deleteUrl}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="button button-danger" onclick="return confirm('Yakin ingin menghapus riwayat akademik ini?');">Delete</button>
+               </form>`
+            : '';
+
+        const isStarredClass = academic.is_starred ? " is-starred" : "";
+        const starText = academic.is_starred ? "Unstar" : "Star";
+        const starTitle = academic.star_count > 0
+            ? `Dibintangi oleh ${escapeHtml(academic.starred_by_names)}`
+            : "Jadilah yang pertama memberi star";
+
+        // Komponen card
+        const completeCardHtml = `
+            ${imageHtml}
+            <span class="projects-category">${escapeHtml(academic.period)}</span>
+            <h2>${escapeHtml(academic.institution)}</h2>
+            <p class="projects-description">${escapeHtml(academic.description)}</p>
+
+            <div class="projects-card-actions">
+                <div class="projects-actions">
+                    <form method="post" action="${starUrl}" class="star-form">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="button button-star${isStarredClass}"
+                                title="${starTitle}">
+                            <span aria-hidden="true">★</span>
+                            ${starText}
+                            <span class="star-count">${academic.star_count}</span>
+                        </button>
+                    </form>
+                    ${editHtml}
+                    ${deleteHtml}
+                </div>
+            </div>
+        `;
+
+        articleElement.innerHTML = completeCardHtml;
+        return articleElement;
+    }
+
+    // Fetch data academic
+    async function fetchAcademics(searchQuery = "") {
+        if (academicsAbortController) academicsAbortController.abort();
+        academicsAbortController = new AbortController();
+
+        try {
+            displayPageSection({ showLoading: true });
+
+            const url = searchQuery
+                ? `${BASE_ACADEMICS_ENDPOINT}?q=${encodeURIComponent(searchQuery)}`
+                : BASE_ACADEMICS_ENDPOINT;
+
+            const response = await fetch(url, {
+                headers: { 'Accept': 'application/json' },
+                signal: academicsAbortController.signal,
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch data');
+
+            const academicData = await response.json();
+
+            if (academicData.length === 0) {
+                displayPageSection({ showEmpty: true });
+            } else {
+                gridContainer.innerHTML = '';
+                academicData.forEach(item => {
+                    gridContainer.appendChild(buildAcademicCardElement(item));
+                });
+                displayPageSection({ showGrid: true });
+            }
+        } catch (error) {
+            if (error.name === 'AbortError') return;
+            console.error('Error loading academics:', error);
+            displayPageSection({ showError: true });
+        }
+    }
+
+    // Membaca nilai cookie, digunakan untuk mengambil token CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Pencarian (dijalankan saat tombol Search / Enter ditekan)
+    searchForm.addEventListener('submit', function (event) {
+        event.preventDefault(); // Mencegah reload halaman
+        fetchAcademics(searchInput.value.trim());
+    });
+
+    // Start application
+    fetchAcademics(searchInput.value.trim());
+</script>
 {% endblock content %}

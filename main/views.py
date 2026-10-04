@@ -1,6 +1,5 @@
 from django.contrib import messages
-from django.core import serializers
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.contrib.auth import login, logout
@@ -33,18 +32,10 @@ def show_main(request):
 # ACADEMIC FUNCTION
 
 def show_academic(request):
-    json_response = get_academics_json(request)
-    
-    academics = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-    academic_list = [item.object for item in academics]
     query = request.GET.get("q", "").strip()
 
     context = {
         "name": "Rama",
-        "academic_list": academic_list,
         "search_query": query,
         "can_edit": can_edit(request.user),
     }
@@ -99,13 +90,35 @@ def delete_academic(request, academic_id):
 
 def get_academics_json(request):
     query = request.GET.get("q", "").strip()
-    academics = Academic.objects.all()
+    academics = Academic.objects.prefetch_related("starred_by").all()
 
     if query:
         academics = academics.filter(institution__icontains=query)
 
-    academic_json = serializers.serialize("json", academics)
-    return HttpResponse(academic_json, content_type="application/json")
+    # Konstruksi data JSON secara manual agar bisa menyisipkan logika Star
+    data = []
+    for academic in academics:
+        starred_users = academic.starred_by.all()
+        is_starred = (
+            request.user in starred_users if request.user.is_authenticated else False
+        )
+        starred_by_names = ", ".join([u.username for u in starred_users])
+
+        data.append({
+            "pk": str(academic.id),
+            "fields": {
+                "institution": academic.institution,
+                "period": academic.period,
+                "description": academic.description,
+                "image": academic.image or "",
+                "order": academic.order,
+                "star_count": len(starred_users),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+            },
+        })
+
+    return JsonResponse(data, safe=False)
 
 @login_required(login_url="/login/")
 def toggle_star_academic(request, academic_id):

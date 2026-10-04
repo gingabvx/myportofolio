@@ -38,6 +38,7 @@ def show_academic(request):
         "name": "Rama",
         "search_query": query,
         "can_edit": can_edit(request.user),
+        "form": AcademicForm(),
     }
     return render(request, "academic.html", context)
 

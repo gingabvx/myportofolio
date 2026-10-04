@@ -11,10 +11,10 @@
             <div class="projects-header">
                 <h1>Academics</h1>
                 {% if user.is_superuser %}
-                <a href="{% url 'main:create_academic' %}" class="button projects-add-button">
+                <button type="button" class="button projects-add-button" popovertarget="add-academic-modal">
                     <span aria-hidden="true">+</span>
                     Add Academic
-                </a>
+                </button>
                 {% endif %}
             </div>
 
@@ -45,6 +45,10 @@
         </div>
     </section>
 </main>
+
+{% if user.is_superuser %}
+{% include "components/academic_form_modal.html" %}
+{% endif %}
 
 <script>
     // Konfigurasi
@@ -220,6 +224,10 @@
         clearTimeout(searchDebounceTimer);
         searchAcademics();
     });
+
+    function closeAcademicModal() {
+        document.getElementById('add-academic-modal').hidePopover();
+    }
 
     // Start application
     fetchAcademics(searchInput.value.trim());

@@ -61,6 +61,9 @@
     const searchForm = document.getElementById('academic-search-form');
     const searchInput = document.getElementById('search-input');
 
+    const SEARCH_DEBOUNCE_DELAY = 300;
+    let searchDebounceTimer;
+
     // Menyembunyikan/Menampilkan section halaman
     function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
         loadingState.classList.toggle('hide', !showLoading);
@@ -79,7 +82,7 @@
             .replaceAll("'", '&#39;');
     }
 
-    // Membuat elemen card academic (escapeHtml dan getCookie berasal dari static/js/utils.js)
+    // Membuat elemen card academic
     function buildAcademicCardElement(item) {
         const academic = item.fields;
         const academicId = item.pk;
@@ -200,10 +203,22 @@
         return cookieValue;
     }
 
-    // Pencarian (dijalankan saat tombol Search / Enter ditekan)
-    searchForm.addEventListener('submit', function (event) {
-        event.preventDefault(); // Mencegah reload halaman
+    // Pencarian dengan debouncing
+    function searchAcademics() {
         fetchAcademics(searchInput.value.trim());
+    }
+
+    searchInput.addEventListener('input', function () {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(function () {
+            searchAcademics();
+        }, SEARCH_DEBOUNCE_DELAY);
+    });
+
+    searchForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        clearTimeout(searchDebounceTimer);
+        searchAcademics();
     });
 
     // Start application

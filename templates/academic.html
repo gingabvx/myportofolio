@@ -191,6 +191,9 @@
         }
     }
 
+    const CREATE_ACADEMIC_ENDPOINT = "{% url 'main:create_academic_ajax' %}";
+    const academicForm = document.getElementById('academic-form');
+
     // Membaca nilai cookie, digunakan untuk mengambil token CSRF
     function getCookie(name) {
         let cookieValue = null;
@@ -205,6 +208,45 @@
             }
         }
         return cookieValue;
+    }
+
+    // Mengirim data form ke server
+    async function addAcademic(event) {
+        event.preventDefault();
+
+        const submitButton = academicForm.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+
+        try {
+            const response = await fetch(CREATE_ACADEMIC_ENDPOINT, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                body: new FormData(academicForm),
+            });
+
+            const result = await response.json().catch(() => ({}));
+
+            if (response.ok) {
+                academicForm.reset();
+                closeAcademicModal();
+                showToast('Berhasil', 'Riwayat akademik baru berhasil ditambahkan!', 'success');
+                fetchAcademics(searchInput.value.trim());
+            } else {
+                const errorMessages = result.errors
+                    ? Object.values(result.errors).flat().map(error => error.message)
+                    : [result.message || `Terjadi kesalahan (status ${response.status}).`];
+                showToast('Gagal menambahkan riwayat akademik', errorMessages.join(' '), 'error');
+            }
+        } catch (error) {
+            console.error('Error adding academic:', error);
+            showToast('Gagal menambahkan riwayat akademik', 'Tidak dapat terhubung ke server. Silakan coba lagi.', 'error');
+        } finally {
+            submitButton.disabled = false;
+        }
+    }
+
+    if (academicForm) {
+        academicForm.addEventListener('submit', addAcademic);
     }
 
     // Pencarian dengan debouncing

@@ -12,7 +12,7 @@ import datetime
 from main.models import Projects, Academic
 
 from main.forms import ProjectForm, AcademicForm
-from main.permissions import can_edit, editor_required, superuser_required
+from main.permissions import can_create_delete, can_edit, editor_required, superuser_required
 
 def show_main(request):
     last_login = request.COOKIES.get('last_login', 'Belum ada sesi login / Cookie tidak ditemukan')
@@ -59,6 +59,24 @@ def create_academic(request):
         "button_text": "Add Academic",
     }
     return render(request, "academic_form.html", context)
+
+@require_POST
+def create_academic_ajax(request):
+    if not can_create_delete(request.user):
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan riwayat akademik."},
+            status=403,
+        )
+
+    form = AcademicForm(request.POST)
+    if form.is_valid():
+        academic = form.save()
+        return JsonResponse(
+            {"message": "Riwayat akademik berhasil ditambahkan.", "pk": str(academic.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
 
 @editor_required
 def edit_academic(request, academic_id):

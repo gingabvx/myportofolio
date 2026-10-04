@@ -19,6 +19,7 @@ urlpatterns = [
     # Academic Routes
     path('academic/', views.show_academic, name='show_academic'),
     path('academic/add/', views.create_academic, name='create_academic'),
+    path('academic/add-ajax/', views.create_academic_ajax, name='create_academic_ajax'),
     path('academic/<uuid:academic_id>/edit/', views.edit_academic, name='edit_academic'),
     path('academic/<uuid:academic_id>/delete/', views.delete_academic, name='delete_academic'),
     path('academic/<uuid:academic_id>/star/', views.toggle_star_academic, name='toggle_star_academic'),

@@ -110,3 +110,31 @@ class AcademicForm(ModelForm):
                 }
             ),
         }
+
+    def clean_institution(self):
+        institution = strip_tags(self.cleaned_data["institution"]).strip()
+        if not institution:
+            raise ValidationError("Nama institusi tidak boleh hanya berisi tag HTML.")
+        return institution
+
+    def clean_period(self):
+        period = strip_tags(self.cleaned_data["period"]).strip()
+        if not period:
+            raise ValidationError("Periode tidak boleh hanya berisi tag HTML.")
+        return period
+
+    def clean_description(self):
+        description = strip_tags(self.cleaned_data["description"]).strip()
+        if not description:
+            raise ValidationError("Deskripsi tidak boleh hanya berisi tag HTML.")
+        return description
+
+    def clean_image(self):
+        image = self.cleaned_data.get("image")
+        if not image:
+            return image
+        image = strip_tags(image).strip()
+        is_local_path = image.startswith("/") and not image.startswith("//")
+        if not (image.startswith(("http://", "https://")) or is_local_path):
+            raise ValidationError("URL gambar harus diawali http://, https://, atau berupa path lokal seperti /static/img/foto.jpg.")
+        return image

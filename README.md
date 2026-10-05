@@ -41,3 +41,12 @@ https://share.gemini.google/tAauFX55OXzA
 #### Disclosure AI
 Saya menggunakan Gemini AI untuk menanyakan sintaks dan memberikan hint. Saya membutuhkan beberapa sintaks untuk field2 baru di academic dan beberapa konfirmasi ulang untuk code yang baru saya buat.
 https://share.gemini.google/1uxH14Cc2W2R
+
+### Tugas 5
+
+1. Debouncing adalah teknik untuk delay eksekusi dari sebuah fungsi dengan jeda waktu tertentu tanpa ada event baru. Fitur ini penting digunakan saat menggunakan pencarian AJAX karena jika tidak menggunakan debouncing, setiap karakter yang diketik akan memicu satu request ke server (mengetik "test123" berarti 7 request). Akibatnya bandwith dan query database akan terbuang sia-sia dan resposne yang lambat akan menimpa hasil pencarian yang paling baru.
+2. fetch() mengembalikan sebuah Promise, sedangkan await membuat program menunggu sampai Promise tersebut selesai sebelum lanjut ke next code. Tanpa await, variabel masih berisi Promise sehingga data belum bisa digunakan. await juga hanya dapat digunakan di dalam async function.
+3. XSS (Cross-Site Scripting) adalah serangan ketika penyerang menyisipkan kode JavaScript berbahaya ke halaman web. Data yang ditampilkan melalui AJAX lebih rentan jika langsung dimasukkan ke innerHTML, karena JavaScript tidak melakukan auto-escaping seperti template Django. Oleh karena itu, data dari AJAX perlu di-escape atau dimasukkan menggunakan textContent agar dianggap sebagai teks, bukan HTML.
+
+#### Disclosure AI
+Saya menggunakan Claude untuk menanyakan beberapa sintaks yang baru digunakan saat mengganti forms.py bagian academic dan unit test baru. Setelah menanyakan sintaks2 tersebut saya mengonfirmasi ulang apa yang sudah saya buat dengan ketentuan yang ada di tugas dengan bantuan Claude.

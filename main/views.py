@@ -39,6 +39,7 @@ def show_academic(request):
         "search_query": query,
         "can_edit": can_edit(request.user),
         "form": AcademicForm(),
+        "edit_form": AcademicForm(auto_id="edit_%s"),
     }
     return render(request, "academic.html", context)
 

@@ -1,0 +1,24 @@
+    <div id="edit-academic-modal" class="project-form-modal" popover="auto" role="dialog" aria-modal="true"
+    aria-labelledby="edit-academic-modal-title">
+    <button type="button" class="project-form-modal__backdrop" popovertarget="edit-academic-modal"
+        popovertargetaction="hide" aria-label="Tutup form edit akademik"></button>
+    <div class="project-form-modal__content">
+        <button type="button" class="project-form-modal__close" popovertarget="edit-academic-modal"
+            popovertargetaction="hide" aria-label="Tutup form edit akademik">×</button>
+        <h2 id="edit-academic-modal-title">Edit Academic Record</h2>
+
+        <form id="edit-academic-form" class="project-form">
+            {% for field in edit_form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+            </div>
+            {% endfor %}
+            <div class="project-form-modal__actions">
+                <button type="button" class="button button-secondary" popovertarget="edit-academic-modal"
+                    popovertargetaction="hide">Cancel</button>
+                <button type="submit" class="button">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>

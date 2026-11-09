@@ -80,9 +80,9 @@ class MainTest(TestCase):
         self.assertEqual(response.status_code, 200)
         for element_id in ("loading", "error", "empty", "grid"):
             self.assertContains(response, f'id="{element_id}"')
-        # Data tidak lagi dirender server; JavaScript mengambilnya dari endpoint JSON.
+        # Data tidak lagi dirender server; JavaScript mengambilnya dari API DRF.
         self.assertNotContains(response, self.academic.description)
-        self.assertContains(response, reverse("main:get_academics_json"))
+        self.assertContains(response, reverse("api:academic-list"))
 
     def test_academic_json(self):
         response = self.client.get(reverse("main:get_academics_json"))
@@ -206,6 +206,20 @@ class EditorRoleTests(TestCase):
         self.assertEqual(flags(self.regular), (False, False, False))
         self.assertEqual(flags(self.editor), (True, False, False))
         self.assertEqual(flags(self.owner), (True, True, True))
+
+    def test_academic_page_sets_csrf_cookie_and_edit_modal_per_role(self):
+        # Star/edit/delete kini dikirim lewat fetch(), jadi cookie csrftoken harus
+        # tetap terpasang untuk pengguna biasa dan Editor. Modal edit hanya untuk
+        # yang boleh mengubah data.
+        edit_modal = 'id="edit-academic-modal"'
+        for user, has_edit_modal in (
+            (self.regular, False), (self.editor, True), (self.owner, True),
+        ):
+            client = Client()
+            client.force_login(user)
+            response = client.get(reverse("main:show_academic"))
+            self.assertIn("csrftoken", response.cookies, user)
+            self.assertEqual(edit_modal in response.content.decode(), has_edit_modal, user)
 
     def test_superuser_full_access(self):
         self.client.force_login(self.owner)

@@ -50,3 +50,14 @@ https://share.gemini.google/1uxH14Cc2W2R
 
 #### Disclosure AI
 Saya menggunakan Claude untuk menanyakan beberapa sintaks yang baru digunakan saat mengganti forms.py bagian academic dan unit test baru. Setelah menanyakan sintaks2 tersebut saya mengonfirmasi ulang apa yang sudah saya buat dengan ketentuan yang ada di tugas dengan bantuan Claude.
+
+
+### Tugas 6
+
+1. REST adalah gaya arsitektur API yang memperlakukan data sebagai resource dengan URL sendiri, lalu aksinya ditentukan oleh method HTTP (GET, POST, PUT/PATCH, DELETE) dan status code yang sesuai. Mengembalikan JSON saja belum cukup karena JSON hanya format datanya. Contohnya endpoint seperti /delete_academic/ yang memakai POST dan selalu membalas 200 tetap belum RESTful. PUT mengganti seluruh data sehingga semua field harus dikirim, sedangkan PATCH hanya mengubah field yang dikirim. PUT cocok saat menimpa semua isian form, PATCH cocok saat hanya sebagian yang berubah, misalnya mengganti period saja.
+2. Serializer berfungsi menerjemahkan objek model menjadi JSON dan sebaliknya, sekaligus memvalidasi input yang masuk. Keuntungannya dibanding merakit dictionary manual dengan JsonResponse, satu serializer bisa dipakai di semua endpoint (daftar, detail, tambah, ubah, star) sehingga format JSON-nya konsisten. Validasi dan strip_tags juga cukup ditulis di satu tempat, field hasil perhitungan seperti star_count dibuat read-only, dan kodenya lebih singkat.
+3. Autentikasi memastikan siapa penggunanya (SessionAuthentication membaca session login), sedangkan otorisasi menentukan apa yang boleh dilakukan pengguna tersebut (permission class). Hak akses harus dicek di server karena menyembunyikan tombol di template hanya mengubah tampilan, sedangkan request tetap bisa dikirim langsung lewat console browser atau curl. Contohnya editor tidak punya tombol delete, tetapi jika ia mengirim request DELETE tetap akan ditolak 403 oleh permission class.
+4. SessionAuthentication memakai cookie session yang otomatis dikirim browser, termasuk saat request berasal dari situs lain, sehingga penyerang bisa memalsukan request atas nama user yang sedang login. Token CSRF mencegah hal itu karena hanya halaman kita yang bisa mengirim token yang cocok. force_authenticate tidak cukup karena langsung mengisi user tanpa melewati proses login, sehingga pengecekan CSRF tidak pernah berjalan dan request tanpa token tetap lolos. Karena itu test CSRF memakai APIClient(enforce_csrf_checks=True) dengan .login() untuk membuktikan request tanpa token ditolak.
+
+#### Disclosure AI
+Saya menggunakan Claude untuk menyesuaikan beberapa fitur yang sudah saya buat di bagian projects ke academic. Ada beberapa part yang berbeda dimana di academic ada field untuk foto yang berbeda. Ada beberapa syntax juga yang ditanyakan untuk melengkapi apa yang kurang dibanding fitur di projects. Terakhir saya menggunakan claude untuk membuatkan unit test yang sesuai.
